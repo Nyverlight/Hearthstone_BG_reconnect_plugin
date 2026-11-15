@@ -1,0 +1,63 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <!-- Must equal the plugin GUID: Firestone pairs <AssemblyName>.dll with BepInEx\config\<AssemblyName>.cfg -->
+    <AssemblyName>com.community.hs.BgReconnect</AssemblyName>
+    <RootNamespace>BgReconnect</RootNamespace>
+    <Product>BG Reconnect</Product>
+    <Version>1.0.0</Version>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+
+    <!-- Hearthstone install folder; override with: dotnet build -p:HearthstoneDir="D:\Games\Hearthstone" -->
+    <HearthstoneDir Condition="'$(HearthstoneDir)' == ''">C:\Program Files (x86)\Hearthstone</HearthstoneDir>
+    <ManagedDir>$(HearthstoneDir)\Hearthstone_Data\Managed</ManagedDir>
+    <!-- Set to true to copy the built DLL into BepInEx\plugins after each build -->
+    <DeployToGame Condition="'$(DeployToGame)' == ''">false</DeployToGame>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+  </ItemGroup>
+
+  <!-- Compile against the exact assemblies of the local install; none of them is copied to the output. -->
+  <ItemGroup>
+    <Reference Include="BepInEx">
+      <HintPath>$(HearthstoneDir)\BepInEx\core\BepInEx.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>$(ManagedDir)\Assembly-CSharp.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>$(ManagedDir)\UnityEngine.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(ManagedDir)\UnityEngine.CoreModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>$(ManagedDir)\UnityEngine.IMGUIModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule">
+      <HintPath>$(ManagedDir)\UnityEngine.TextRenderingModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule">
+      <HintPath>$(ManagedDir)\UnityEngine.InputLegacyModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <Target Name="DeployToHearthstone" AfterTargets="Build" Condition="'$(DeployToGame)' == 'true'">
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(HearthstoneDir)\BepInEx\plugins" />
+    <Message Importance="high" Text="Copied $(TargetFileName) to $(HearthstoneDir)\BepInEx\plugins" />
+  </Target>
+
+</Project>
